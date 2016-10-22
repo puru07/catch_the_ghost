@@ -77,9 +77,11 @@ def astar(prob,start,goal):
 		#print(iter)
 		iter += 1
 		# checking if any viable node is left in open dict:
-		if not open_dict_check(list(open_dict),goal):
+		open_dict = open_dict_filter(open_dict,goal)
+		if len(open_dict) == 0:
 			return 0
 		node_to_expand = min(open_dict.items(), key=op.itemgetter(1))
+		
 		if [node_to_expand[0].row,node_to_expand[0].col,node_to_expand[0].time] == goal:
 			closed_dict.update({node_to_expand[0]:node_to_expand[1]})
 			print 'solution found'
@@ -90,13 +92,14 @@ def astar(prob,start,goal):
 		open_dict.update(new_dict)
 		closed_dict.update({node_to_expand[0]:node_to_expand[1]})
 
-def open_dict_check(open_list,goal):		# needs open_dict as list
+def open_dict_filter(open_dict,goal):
 	total_time = goal[2]
-	print goal[2]
+	open_list = list(open_dict)
 	for item in open_list:
-		if item.time <= total_time:
-			return 1
-	return 0
+		if item.time > total_time:
+			del open_dict[item]
+
+	return open_dict
 
 def backtrack(list_nodes,goal_node):
 	next_node = goal_node
