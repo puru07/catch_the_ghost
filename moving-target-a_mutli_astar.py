@@ -1,7 +1,7 @@
 import sys
 from problemparser import problem
 import operator as op
-
+import math
 
 class state_node:
 	'base class for the players state'
@@ -15,8 +15,9 @@ class state_node:
 		self.col 	= col
 		self.time 	= time
 		self.indx 	= indx
-		self.hval_time	= ((row - goal_row)**(2) + (col - goal_col)**(2) + (time - goal_time)**(2))**(0.5)
-		self.hval 		= ((row - goal_row)**(2) + (col - goal_col)**(2))**(0.50)
+		self.hval = math.fabs(row-goal_row) + math.fabs(col - goal_col) + (goal_time - time)
+		#self.hval	= ((row - goal_row)**(2) + (col - goal_col)**(2) + (time - goal_time)**(2))**(0.5)
+		#self.hval 		= ((row - goal_row)**(2) + (col - goal_col)**(2))**(0.50)
 		if parent == 0:
 			self.pre = 0
 			self.gval = prob.cost[row][col]
@@ -33,26 +34,26 @@ class state_node:
 		# retaining the same pos on grid
 		if not check_repeat(self.row,self.col,time,closed):
 			new_node= state_node(self,self.row,self.col,time,state_node.total_node,prob,goal)
-			return_dict.update({new_node: (new_node.hval_time + new_node.gval)})
+			return_dict.update({new_node: (new_node.hval + new_node.gval)})
 		# expanding in row direction
 		if self.row < prob.grid - 1:
 			row_new = self.row + 1
 			if not check_repeat(row_new,self.col,time,closed):
 				new_node= state_node(self,row_new,self.col,time,state_node.total_node,prob,goal)
-				return_dict.update({new_node: (new_node.hval_time + new_node.gval)})
+				return_dict.update({new_node: (new_node.hval + new_node.gval)})
 			
 		if self.row > 0:
 			row_new = self.row - 1
 			if not check_repeat(row_new,self.col,time,closed):
 				new_node = state_node(self,row_new,self.col,time,state_node.total_node,prob,goal)
-				return_dict.update({new_node: (new_node.hval_time + new_node.gval)})
+				return_dict.update({new_node: (new_node.hval + new_node.gval)})
 
 		# expanding in col dir
 		if self.col < prob.grid - 1:
 			col_new = self.col + 1
 			if not check_repeat(self.row,col_new,time,closed):
 				new_node = state_node(self,self.row,col_new,time,state_node.total_node,prob,goal)
-				return_dict.update({new_node: (new_node.hval_time + new_node.gval)})
+				return_dict.update({new_node: (new_node.hval + new_node.gval)})
 
 		if self.col > 0:
 			col_new = self.col -1
@@ -130,7 +131,9 @@ print sys.argv[-1]
 prob = problem(str(sys.argv[-1]))
 plan = []
 goal_time = 0
+print 'total number of goals ', len(prob.path)
 for starts in  prob.path:
+	print 'going for goal ', goal_time
 	start = [starts[0],starts[1]]  
 	goal = [prob.start[0], prob.start[1], goal_time]
 	astar_out = astar(prob,start,goal)
