@@ -46,6 +46,7 @@ weight = 1
 astar_out = astar(prob,h,start,goal,weight)
 if astar_out != 0:
 	plan = backtrack(astar_out[0],astar_out[1])
+raw_input('press enter to print the path')
 print 'the path \n'
 for item in plan:
 	print (item[0], item[1])
