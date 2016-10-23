@@ -19,8 +19,8 @@ def astar(prob,h,start,goal,weight):
 	closed_dict = {}
 	start_node = state_node(h,hmap,0,start[0],start[1],0,0,prob,goal)
 	open_dict = pq()
-	open_dict.put((start_node.gval + start_node.hval,start_node))
-	hash_dict_open = {hash_fn(start[0],start[1],0,prob.grid):(start_node.gval + start_node.hval)}
+	open_dict.put((weight*(start_node.gval + start_node.hval),start_node))
+	hash_dict_open = {hash_fn(start[0],start[1],0,prob.grid):weight*(start_node.gval + start_node.hval)}
 	hash_dict_closed= {}
 	max_time = max([item[2] for item in goal])
 
@@ -38,7 +38,7 @@ def astar(prob,h,start,goal,weight):
 
 		key_check =  hash_fn(node2exp.row,node2exp.col,node2exp.time,prob.grid)
 		if key_check in hash_dict_open:
-			if hash_dict_open[key_check] < (node2exp.gval + node2exp.hval):
+			if hash_dict_open[key_check] < weight*(node2exp.gval + node2exp.hval):
 				# print iter
 				continue
 		
@@ -59,16 +59,16 @@ def astar(prob,h,start,goal,weight):
 			hash_key = hash_fn(item.row,item.col,item.time,prob.grid)
 			if hash_key	not in hash_dict_closed:
 				if hash_key	not in hash_dict_open:
-					hash_dict_open[hash_key] = item.hval + item.gval 
-					open_dict.put((item.gval + item.hval, item))
+					hash_dict_open[hash_key] = weight*(item.hval + item.gval) 
+					open_dict.put((weight*(item.gval + item.hval), item))
 				else:
 					if hash_dict_open[hash_key] > item.gval:
-						hash_dict_open[hash_key] = item.gval+ item.hval
-						open_dict.put((item.gval+ item.hval,item))
+						hash_dict_open[hash_key] = weight*(item.gval+ item.hval)
+						open_dict.put((weight*(item.gval+ item.hval),item))
 
 		closed_dict.update({node2exp.indx:node2exp})
 		#print 'new member ', len(closed_dict)
-		hash_dict_closed.update({hash_fn(node2exp.row,node2exp.col,node2exp.time,prob.grid):node2exp.gval + node2exp.hval})
+		hash_dict_closed.update({hash_fn(node2exp.row,node2exp.col,node2exp.time,prob.grid):weight*(node2exp.gval + node2exp.hval)})
 
 		if len(hash_dict_closed) > prob.grid*prob.grid*len(goal):
 			print len(closed_dict), ' '
