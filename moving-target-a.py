@@ -27,7 +27,6 @@ def backtrack(dict_nodes,goal_node):
 			return tree
 
 
-
 # getting the problem data
 print sys.argv[-1]
 prob = problem(str(sys.argv[-1]))
