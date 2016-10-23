@@ -33,7 +33,11 @@ def dji(prob,goal):
 			node2exp = node2exp[1]
 		else:
 			return hash_dict_closed
-		#node2exp = min(open_dict.items(), key=op.itemgetter(1))
+		key_check =  hash_fn(node2exp.row,node2exp.col,prob.grid)
+		if key_check in hash_dict_open:
+			if hash_dict_open[key_check] < node2exp.gval:
+				# print iter
+				continue
 
 		#del open_dict[node2exp]
 		
