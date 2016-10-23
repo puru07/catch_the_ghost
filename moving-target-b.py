@@ -5,7 +5,7 @@ import math
 from astar_dmap import astar
 from state_node_time import state_node
 
-def backtrack(list_nodes,goal_node):
+def backtrack(dict_nodes,goal_node):
 	next_node = goal_node
 	print 'cost of path ' , goal_node.gval
 	print 'total number of expansions ', goal_node.indx 
@@ -13,18 +13,16 @@ def backtrack(list_nodes,goal_node):
 	indx = goal_node.pre
 	while True:
 		# find the next node
-		if len(list_nodes) !=0 :
+		if len(dict_nodes) !=0 :
 			if next_node.time == 0:
 				return tree
-			for item in list_nodes:
-				if item.indx == indx:
-					next_node = item
-					indx = next_node.pre
-					list_nodes.remove(next_node)
-					new_data = [next_node.row,next_node.col,next_node.time,next_node.gval]
-					
-					tree.append(new_data)
-					break
+			while True:
+				next_node = dict_nodes[indx]
+				indx = next_node.pre
+				new_data = [next_node.row,next_node.col,next_node.time,next_node.gval]
+				tree.append(new_data)
+				if next_node.time == 0:
+					return tree
 		else:
 			return tree
 
@@ -46,7 +44,7 @@ h = 4 # heuristic function
 weight = 20
 astar_out = astar(prob,h,start,goal,weight)
 if astar_out != 0:
-	plan = backtrack(list(astar_out[0]),astar_out[1])
+	plan = backtrack(astar_out[0],astar_out[1])
 print 'the path \n'
 for item in plan:
 	print (item[0], item[1])
