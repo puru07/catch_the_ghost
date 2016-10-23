@@ -7,10 +7,10 @@ class state_node:
 		self.row 	= row
 		self.col 	= col
 		self.indx 	= indx
-		# if parent == 0:
-		# 	self.pre = 0
-		# 	self.gval = prob.cost[row][col]
-		# else:
+		if parent == 0:
+			self.pre = 0
+			self.gval = prob.cost[row][col]
+		else:
 		self.pre = parent.indx
 		self.gval = parent.gval + prob.cost[row][col]
 		state_node.total_node += 1
