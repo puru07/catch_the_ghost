@@ -15,7 +15,7 @@ class state_node:
 			self.gval = parent.gval + prob.cost[row][col]
 		state_node.total_node += 1
 	
-	def expand(self, prob,open,w):
+	def expand(self, prob,w):
 		return_dict = {}				#list to be returned 
 		# expanding in row direction
 		if self.row < prob.grid - 1:

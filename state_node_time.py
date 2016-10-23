@@ -46,7 +46,7 @@ class state_node:
 		#print state_node.total_node
 		state_node.total_node += 1
 	
-	def expand(self,h, hmap,prob, closed,open,goal,w,hash_dict_closed):
+	def expand(self,h, hmap,prob,goal,w):
 		return_dict = {}				#list to be returned 
 		max_time = len(prob.path)
 		time = self.time + 1

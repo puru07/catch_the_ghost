@@ -2,6 +2,11 @@ import operator as op
 from state_node_time import state_node
 from dcost import dcost
 from dcost_map import dcost_map
+import time
+try:
+	from Queue import PriorityQueue as pq
+except: 
+	from queue import PriorityQueue as pq
 
 def mapping(prob,start,goal):
 	return(dcost_map(prob,start,goal))
@@ -12,7 +17,8 @@ def astar(prob,h,start,goal,weight):
 
 	closed_dict = {}
 	start_node = state_node(h,hmap,0,start[0],start[1],0,0,prob,goal)
-	open_dict = {start_node:(start_node.gval + start_node.hval)}
+	open_dict = pq()
+	open_dict.put(start_node.gval + start_node.hval,start_node)
 	hash_dict_open = {hash_fn(start[0],start[1],0,prob.grid):(start_node.gval + start_node.hval)}
 	hash_dict_closed= {}
 	max_time = max([item[2] for item in goal])
@@ -20,52 +26,55 @@ def astar(prob,h,start,goal,weight):
 	iter = 0
 	while True:
 			# open_dict,goal = open_dict_filter(open_dict,goal)
-		node2exp = min(open_dict.items(), key=op.itemgetter(1))
-		del open_dict[node2exp[0]]
+		if not open_dict.empty():
+			node2exp = open_dict.get()
+		else:
+			print 'open list empty, no solutions found'
+			return 0
+		#node2exp = min(open_dict.items(), key=op.itemgetter(1))
 
-		key_check =  hash_fn(node2exp[0].row,node2exp[0].col,node2exp[0].time,prob.grid)
+
+		key_check =  hash_fn(node2exp.row,node2exp.col,node2exp.time,prob.grid)
 		try:
-			if hash_dict_open[key_check] < (node2exp[0].gval + node2exp[0].hval):
+			if hash_dict_open[key_check] < (node2exp.gval + node2exp.hval):
 				print iters
 				continue
 		except:
 			pass
 		
 		#checking if goal is reached
-		if goal_check(node2exp[0],goal):
-			closed_dict.update({node2exp[0]:node2exp[1]})
+		if goal_check(node2exp,goal):
+			closed_dict.update({node2exp.indx:node2exp})
 			print 'solution found'
-			return [closed_dict, node2exp[0]]
+			return [closed_dict, node2exp]
 		
-		new_dict = node2exp[0].expand(h,hmap,prob,closed_dict,open_dict,goal,weight,hash_dict_closed)
+		new_dict = node2exp.expand(h,hmap,prob,goal,weight)
 		if new_dict ==0 :
 			continue
 
 		for item in list(new_dict):
 			hash_key = hash_fn(item.row,item.col,item.time,prob.grid)
 			if hash_key	not in hash_dict_closed:
-				hash_dict_open[hash_key] = item.hval + item.gval 
-				open_dict.update({item: (item.gval + item.hval)})
-			else:
-				continue
-
-		if len(hash_dict_closed) != 0:
-			if hash_fn(node2exp[0].row,node2exp[0].col,node2exp[0].time,prob.grid) in hash_dict_closed:
-				# print 'caught'
-				continue
+				if hash_key	not in hash_dict_open:
+					hash_dict_open[hash_key] = item.hval + item.gval 
+					open_dict.put(item.gval + item.hval, item)
+				else:
+					if hash_dict_open[hash_key] > item.gval:
+						hash_dict_open[hash_key] = item.gval+ item.hval
+						open_dict.put(item.gval+ item.hval,item)
+				
 		
-		open_dict,goal = open_dict_filter(open_dict,goal)
 
-		closed_dict.update({node2exp[0]:node2exp[1]})
+		closed_dict.update({node2exp.indx:node2exp})
 		#print 'new member ', len(closed_dict)
-		hash_dict_closed.update({hash_fn(node2exp[0].row,node2exp[0].col,node2exp[0].time,prob.grid):node2exp[1]})
+		hash_dict_closed.update({hash_fn(node2exp.row,node2exp.col,node2exp.time,prob.grid):node2exp.gval + node2exp.hval})
 
 		if len(closed_dict) > 49*len(goal):
 			print len(closed_dict), ' ', len(open_dict)
 		#	raw_input()
 		
 		iter += 1
-		#if node2exp[0].time > max_time:
+		#if node2exp.time > max_time:
 			#print 'moving on'
 			
 		#print 'going to iter ' , iter
