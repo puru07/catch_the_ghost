@@ -1,6 +1,6 @@
 import sys
 from problemparser import problem
-import operator as op
+
 import math
 from astar_dmap import astar
 from state_node_time import state_node

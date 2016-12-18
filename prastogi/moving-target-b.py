@@ -1,6 +1,6 @@
 import sys
 from problemparser import problem
-
+import operator as op
 import math
 from astar_dmap import astar
 from state_node_time import state_node
@@ -41,7 +41,7 @@ for goals in prob.path:
 
 start = [prob.start[0],prob.start[1]]
 h = 4 # heuristic function
-weight = 1
+weight = 20
 astar_out = astar(prob,h,start,goal,weight)
 if astar_out != 0:
 	plan = backtrack(astar_out[0],astar_out[1])

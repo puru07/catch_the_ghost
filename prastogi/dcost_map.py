@@ -1,6 +1,6 @@
 import state_node_d
 from state_node_d import state_node
-	
+
 import time
 try:
 	from Queue import PriorityQueue as pq
